@@ -1,16 +1,16 @@
 name: Deploy Dist
 
-# on: 
-#   [push, workflow_dispatch]
-on: 
+on:
   push:
     branches:
       - main
       - 'feature/**'
+    # ✅ Corrected paths-ignore (no ./)
     paths-ignore:
-         - './github/workflows/*'
-         - 'README.md'
+      - '.github/workflows/**'
+      - 'README.md'
   workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -43,9 +43,11 @@ jobs:
 
       - name: Run Tests
         run: npm test
+
   build:
     needs: test
     runs-on: ubuntu-latest
+
     steps:
       - name: Get code
         uses: actions/checkout@v4
@@ -63,8 +65,10 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
       - name: Build project
         run: npm run build
+
       - name: Upload Dist artifact
         uses: actions/upload-artifact@v4
         with:
@@ -74,11 +78,13 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Upload Dist artifact
+      - name: Download Dist artifact
         uses: actions/download-artifact@v4
         with:
           name: dist-files
           path: dist
+
       - name: Deploy
-        run: echo " Deploying the project successfully..."
+        run: echo "🚀 Deploying the project successfully..."
